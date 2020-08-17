@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dmyin.dao.QuestionDao">
+    <select id="courseCount" resultType="long" parameterType="int">
+        select count(*) from t_question where courseId = #{id}
+    </select>
+
+    <sql id="PageBeanSql">
+            <if test="queryParams != null">
+                <if test="queryParams.difficulty != null">
+                    and difficulty = #{queryParams.difficulty}
+                </if>
+                <if test="queryParams.courseId != null">
+                    and courseId = #{queryParams.courseId}
+                </if>
+                <if test="queryParams.keyWord !=null">
+                    and subject like concat("%",queryParams.keyWord,"%")
+                </if>
+                <if test="queryParams.type != null">
+                    and type = #{queryParams.type}
+                </if>
+            </if>
+    </sql>
+
+    <select id="QuestionCount" resultType="long" parameterType="QueryPageBean">
+        select count(*) from t_question
+        where isClassic=0
+       <include refid="PageBeanSql"></include>
+    </select>
+
+    <select id="questionByPageBean" parameterType="queryPageBean" resultType="Question">
+        select
+        10000+id number,type,subject,createDate,difficulty,
+        (select name from t_course where id=q.courseId) courseName,
+        (select username from t_user where id=q.userId) creator,
+        (select count(*) from tr_member_question where questionId=q.id) usedQty
+        from t_question q
+        where isClassic=0
+        <include refid="PageBeanSql"></include>
+        limit #{offset},#{pageSize}
+    </select>
+
+<!--    添加问题-->
+    <insert id="addQuestion" parameterType="question">
+         insert into t_question(
+            subject,type,difficulty,analysis,analysisVideo,
+            remark,isClassic,status,reviewStatus,createDate,
+            userId,companyId,catalogId,courseId
+        )
+        values (
+            #{subject},#{type},#{difficulty},#{analysis},#{analysisVideo},
+            #{remark},#{isClassic},#{status},#{reviewStatus},#{createDate},
+            #{userId},#{companyId},#{catalogId},#{courseId}
+        )
+--       自增长
+<selectKey resultType="int" keyProperty="id" keyColumn="id" order="AFTER">
+    select last_insert_id()
+</selectKey>
+    </insert>
+
+
+    <insert id="addQuestionDao_tag" parameterType="map">
+        insert into tr_question_tag(questionId,tagId) values (#{questionId},#{tagId})
+    </insert>
+</mapper>

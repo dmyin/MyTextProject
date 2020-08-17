@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dmyin.dao.CatalogDao">
+<select id="courseCount" parameterType="int" resultType="long">
+    select count(*) from t_catalog where courseId = #{id}
+</select>
+
+    <select id="findIdAndName" resultType="Catalog" parameterType="int">
+        select id,name from t_catalog where courseId = #{id}
+    </select>
+</mapper>

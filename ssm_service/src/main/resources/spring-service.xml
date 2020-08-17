@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <import resource="classpath:spring-mybatis.xml"></import>
+
+    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+
+
+    <!--2.方式一：声明式事务配置-->
+<!--    <tx:advice id="txAdvice" transaction-manager="dataSourceTransactionManager">-->
+<!--        &lt;!&ndash;配置传播特性属性&ndash;&gt;-->
+<!--        <tx:attributes>-->
+<!--            &lt;!&ndash;-->
+<!--                对应方法参与事务并且在事务下执行，事务隔离剂别使用默认隔离级别,发生异常需要事务回滚-->
+<!--            &ndash;&gt;-->
+<!--            <tx:method name="add*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            <tx:method name="insert*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            <tx:method name="save*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            <tx:method name="delete*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            <tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            <tx:method name="edit*" isolation="DEFAULT" propagation="REQUIRED" rollback-for="java.lang.Exception" />-->
+<!--            &lt;!&ndash;-->
+<!--                只读操作-->
+<!--            &ndash;&gt;-->
+<!--            <tx:method name="*" read-only="true" />-->
+<!--        </tx:attributes>-->
+<!--    </tx:advice>-->
+    <!--AOP声明式事务配置（配置切入点，通知关联切入点）-->
+<!--    <aop:config>-->
+<!--        &lt;!&ndash;切点指点&ndash;&gt;-->
+<!--        <aop:pointcut id="tranpointcut" expression="execution(* com.dmyin.service.*.*(..))" />-->
+<!--        &lt;!&ndash;配置通知&ndash;&gt;-->
+<!--        <aop:advisor advice-ref="txAdvice" pointcut-ref="tranpointcut" />-->
+<!--    </aop:config>-->
+    <!--方式二：注解方式事务配置-->
+   <tx:annotation-driven transaction-manager="dataSourceTransactionManager"/>
+    <!--3.扫描service-->
+    <context:component-scan base-package="com.dmyin.service"/>
+</beans>
